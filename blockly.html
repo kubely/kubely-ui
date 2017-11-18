@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html>
 <head>
 
@@ -14,27 +13,7 @@
     <script src="blocks.js"></script>
 
     <!-- //copy-->
-    <script>
- function init() {
-  var workspace = Blockly.inject('blocklyDiv',
-      {toolbox: document.getElementById('toolbox'),
-      zoom:
-         {controls: true,
-          wheel: false,
-          startScale: 1.0,
-          maxScale: 3,
-          minScale: 0.3,
-          scaleSpeed: 1.2},
-     trashcan: true});
 
- window.parent.blockly_loaded(Blockly);
- var rootBlock = Blockly.Block.obtain(Blockly.mainWorkspace, 'version');
-        rootBlock.initSvg();
-        rootBlock.render();
-        rootBlock.setMovable(false);
-        rootBlock.setDeletable(false);
-}
-</script>
 
 </head>
 
@@ -65,9 +44,29 @@
     </category>
 
 
+</xml>
 
+<script>
+    function init() {
+        var workspace = Blockly.inject('blocklyDiv',
+                {toolbox: document.getElementById('toolbox'),
+                    zoom:
+                            {controls: true,
+                                wheel: true,
+                                startScale: 1.0,
+                                maxScale: 3,
+                                minScale: 0.3,
+                                scaleSpeed: 1.2},
+                    trashcan: true});
 
-
+        window.parent.blockly_loaded(Blockly);
+        var rootBlock = Blockly.Block.obtain(Blockly.mainWorkspace, 'version');
+        rootBlock.initSvg();
+        rootBlock.render();
+        rootBlock.setMovable(false);
+        rootBlock.setDeletable(false);
+    }
+</script>
 
 </body>
 

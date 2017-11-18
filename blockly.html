@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <!-- //from doc-->
+    <meta charset="utf-8">
+    <script src="blockly/blockly_compressed.js"></script>
+    <script src="blockly/generators/javascript.js"></script>
+    <!-- //language specific-->
+    <script src="blockly/msg/js/en.js"></script>
+    <!-- //from doc-->
+    <script src="javascript.js"></script>
+    <!-- //copy-->
+    <script src="blocks.js"></script>
+
+    <!-- //copy-->
+    <script>
+ function init() {
+  var workspace = Blockly.inject('blocklyDiv',
+      {toolbox: document.getElementById('toolbox'),
+      zoom:
+         {controls: true,
+          wheel: false,
+          startScale: 1.0,
+          maxScale: 3,
+          minScale: 0.3,
+          scaleSpeed: 1.2},
+     trashcan: true});
+
+ window.parent.blockly_loaded(Blockly);
+ var rootBlock = Blockly.Block.obtain(Blockly.mainWorkspace, 'version');
+        rootBlock.initSvg();
+        rootBlock.render();
+        rootBlock.setMovable(false);
+        rootBlock.setDeletable(false);
+}
+</script>
+
+</head>
+
+<!-- //what is onload init -->
+<body onload="init()">
+
+<div id="blocklyDiv" style="height: 700px; width: 900px;"></div>
+
+<xml id="toolbox" style="display: none">
+    <category name="filename">
+        <block type="version"></block>
+        <block type="name"></block>
+    </category>
+
+    <category name="containers">
+        <block type="containers"></block>
+        <block type="container_name"></block>
+        <block type="image"></block>
+    </category>
+
+    <category name="services">
+        <block type="services"></block>
+        <block type="service_name"></block>
+        <block type="service_type"></block>
+        <block type="ports_mappings"></block>
+        <block type="label_output"></block>
+
+    </category>
+
+
+
+
+
+
+</body>
+
+
+
+</html>

@@ -1,0 +1,51 @@
+body
+{
+	font-family:Arial, sans-serif;
+	font-size: 16pt;
+/*	background-image: url("back.jpg"); */
+}
+p
+{
+	line-height:24pt;
+	color:#FFF;
+}
+#header
+{
+    font-family:Comic Sans MS;
+    font-size: 50pt;
+	color:#F00;
+}
+#blockly
+{
+	border:1px solid #CCC;
+	padding-left:0;
+	height:700px;
+}
+#blockly_editor
+{
+	width:49%;
+	float:left;
+}
+#description
+{
+	width:49%;
+	float:right;
+	margin-top:0;
+	color:#000;
+}
+#button_run
+{
+	margin-left:20%;
+}
+
+#button_k8s
+{
+	margin-left:20%;
+}
+
+#button_oc
+{
+	margin-left:20%;
+}
+
+

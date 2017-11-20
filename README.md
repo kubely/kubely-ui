@@ -1,5 +1,17 @@
-* <link> is to use give reference to CSS
 
-* `iframe` is for insert page in rectangular block
- 
-* dustbin will come if I add category
+Blockly-Kedge
+=============
+
+
+Build this Project:
+
+```
+docker build -t surajnarwade/blockly-kedge .
+```
+
+Use this project:
+
+```
+docker run -d -p 80:80 surajnarwade/blockly-kedge
+```
+

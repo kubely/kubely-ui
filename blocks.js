@@ -4,6 +4,8 @@ Blockly.Blocks['version'] = {
         .setCheck(null)
         .appendField(new Blockly.FieldTextInput("1"), "version");
     this.setInputsInline(true);
+      this.setPreviousStatement(true, null);
+      this.setNextStatement(true, null);
     this.setColour(150);
     this.setTooltip('version 2');
     this.setHelpUrl('https://docs.docker.com/compose/compose-file/compose-file-v2/');
@@ -22,6 +24,16 @@ Blockly.Blocks['service_name'] = {
     this.setTooltip('service name goes here');
     this.setHelpUrl('https://docs.docker.com/compose/compose-file/compose-file-v2/#service-configuration-reference');
   }
+};
+
+Blockly.Blocks['main'] = {
+    init: function() {
+        this.appendStatementInput("main")
+            .setCheck(null);
+        this.setColour(230);
+        this.setTooltip("main");
+        this.setHelpUrl("main");
+    }
 };
 
 Blockly.Blocks['image'] = {

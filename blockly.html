@@ -25,6 +25,8 @@
 <xml id="toolbox" style="display: none">
     <category name="filename">
         <block type="version"></block>
+        <block type="main"></block>
+
         <block type="name"></block>
     </category>
 
@@ -60,7 +62,7 @@
                     trashcan: true});
 
         window.parent.blockly_loaded(Blockly);
-        var rootBlock = Blockly.Block.obtain(Blockly.mainWorkspace, 'version');
+        var rootBlock = Blockly.Block.obtain(Blockly.mainWorkspace, 'main');
         rootBlock.initSvg();
         rootBlock.render();
         rootBlock.setMovable(false);

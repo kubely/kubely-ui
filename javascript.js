@@ -35,6 +35,32 @@ Blockly.JavaScript['version'] = function(block) {
   return code+"!";
 };
 
+Blockly.JavaScript['main'] = function(block) {
+    var statements_main = Blockly.JavaScript.statementToCode(block, 'main');
+    // TODO: Assemble JavaScript into code variable.
+    var dict12 = {};
+    a = statements_main.split("!");
+    function jsonConcat(o1, o2) {
+        for (var key in o2) {
+            o1[key] = o2[key];
+        }
+        return o1;
+    }
+    var config = {};
+    var final = [];
+    for(i = 0; i< a.length-1; i++) {
+
+        console.log(i);
+        q = JSON.parse(a[i]);
+        config = jsonConcat(config, q);
+        final.push(q);
+
+    }
+    dict12['kedge'] = final;
+    var code = JSON.stringify(dict12);
+    return code;
+};
+
 /////////////////////
 Blockly.JavaScript['name'] = function(block) {
     var text_name = block.getFieldValue('name');

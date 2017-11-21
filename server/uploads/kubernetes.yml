@@ -1,0 +1,533 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app: web
+  name: web
+spec:
+  ports:
+  - name: web-8080
+    port: 8080
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app: web
+  type: NodePort
+status:
+  loadBalancer: {}
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: web
+  name: web
+spec:
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: web
+      name: web
+    spec:
+      containers:
+      - image: centos/httpd
+        name: web
+        resources: {}
+status: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app: web
+  name: web
+spec:
+  ports:
+  - name: web-8080
+    port: 8080
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app: web
+  type: NodePort
+status:
+  loadBalancer: {}
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: web
+  name: web
+spec:
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: web
+      name: web
+    spec:
+      containers:
+      - image: centos/httpd
+        name: web
+        resources: {}
+status: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app: web
+  name: web
+spec:
+  ports:
+  - name: web-8080
+    port: 8080
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app: web
+  type: NodePort
+status:
+  loadBalancer: {}
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: web
+  name: web
+spec:
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: web
+      name: web
+    spec:
+      containers:
+      - image: centos/httpd
+        name: web
+        resources: {}
+status: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app: web
+  name: web
+spec:
+  ports:
+  - name: web-8080
+    port: 8080
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app: web
+  type: NodePort
+status:
+  loadBalancer: {}
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: web
+  name: web
+spec:
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: web
+      name: web
+    spec:
+      containers:
+      - image: centos/httpd
+        name: web
+        resources: {}
+status: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app: web
+  name: web
+spec:
+  ports:
+  - name: web-8080
+    port: 8080
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app: web
+  type: NodePort
+status:
+  loadBalancer: {}
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: web
+  name: web
+spec:
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: web
+      name: web
+    spec:
+      containers:
+      - image: centos/httpd
+        name: web
+        resources: {}
+status: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app: web
+  name: web
+spec:
+  ports:
+  - name: web-8080
+    port: 8080
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app: web
+  type: NodePort
+status:
+  loadBalancer: {}
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: web
+  name: web
+spec:
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: web
+      name: web
+    spec:
+      containers:
+      - image: centos/httpd
+        name: web
+        resources: {}
+status: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app: web
+  name: web
+spec:
+  ports:
+  - name: web-8080
+    port: 8080
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app: web
+  type: NodePort
+status:
+  loadBalancer: {}
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: web
+  name: web
+spec:
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: web
+      name: web
+    spec:
+      containers:
+      - image: centos/httpd
+        name: web
+        resources: {}
+status: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app: web
+  name: web
+spec:
+  ports:
+  - name: web-8080
+    port: 8080
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app: web
+  type: NodePort
+status:
+  loadBalancer: {}
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: web
+  name: web
+spec:
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: web
+      name: web
+    spec:
+      containers:
+      - image: centos/httpd
+        name: web
+        resources: {}
+status: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app: web
+  name: web
+spec:
+  ports:
+  - name: web-8080
+    port: 8080
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app: web
+  type: NodePort
+status:
+  loadBalancer: {}
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: web
+  name: web
+spec:
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: web
+      name: web
+    spec:
+      containers:
+      - image: centos/httpd
+        name: web
+        resources: {}
+status: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app: web
+  name: web
+spec:
+  ports:
+  - name: web-8080
+    port: 8080
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app: web
+  type: NodePort
+status:
+  loadBalancer: {}
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: web
+  name: web
+spec:
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: web
+      name: web
+    spec:
+      containers:
+      - image: centos/httpd
+        name: web
+        resources: {}
+status: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app: web
+  name: web
+spec:
+  ports:
+  - name: web-8080
+    port: 8080
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app: web
+  type: NodePort
+status:
+  loadBalancer: {}
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: web
+  name: web
+spec:
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: web
+      name: web
+    spec:
+      containers:
+      - image: centos/httpd
+        name: web
+        resources: {}
+status: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app: web
+  name: web
+spec:
+  ports:
+  - name: web-8080
+    port: 8080
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app: web
+  type: NodePort
+status:
+  loadBalancer: {}
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: web
+  name: web
+spec:
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: web
+      name: web
+    spec:
+      containers:
+      - image: centos/httpd
+        name: web
+        resources: {}
+status: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app: web
+  name: web
+spec:
+  ports:
+  - name: web-8080
+    port: 8080
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app: web
+  type: NodePort
+status:
+  loadBalancer: {}
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: web
+  name: web
+spec:
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: web
+      name: web
+    spec:
+      containers:
+      - image: centos/httpd
+        name: web
+        resources: {}
+status: {}

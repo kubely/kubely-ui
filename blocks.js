@@ -12,19 +12,6 @@ Blockly.Blocks['version'] = {
   }
 };
 
-Blockly.Blocks['service_name'] = {
-  init: function() {
-    this.appendStatementInput("service_name")
-        .setCheck(null)
-        .appendField(new Blockly.FieldTextInput("web"), "service_name");
-    this.setInputsInline(true);
-    this.setPreviousStatement(true, null);
-      this.setNextStatement(true, null);
-    this.setColour(170);
-    this.setTooltip('service name goes here');
-    this.setHelpUrl('https://docs.docker.com/compose/compose-file/compose-file-v2/#service-configuration-reference');
-  }
-};
 
 Blockly.Blocks['main'] = {
     init: function() {
@@ -76,6 +63,18 @@ init: function() {
   }
 };
 
+Blockly.Blocks['env_mappings'] = {
+    init: function() {
+        this.appendStatementInput("env_mappings")
+            .setCheck(null)
+            .appendField("env_mappings");
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
+        this.setColour(195);
+        this.setTooltip('');
+        this.setHelpUrl('https://docs.docker.com/compose/compose-file/compose-file-v2/#ports');
+    }
+};
 
 Blockly.Blocks['page_text'] = {
   init: function() {
@@ -88,19 +87,6 @@ Blockly.Blocks['page_text'] = {
   }
 };
 
-Blockly.Blocks['restart'] = {
-  init: function() {
-    this.appendDummyInput()
-        .setAlign(Blockly.ALIGN_CENTRE)
-        .appendField("restart")
-        .appendField(new Blockly.FieldTextInput("always"), "restart");
-    this.setPreviousStatement(true, null);
-    this.setNextStatement(true, null);
-    this.setColour(230);
-    this.setTooltip('');
-    this.setHelpUrl('');
-  }
-};
 
 Blockly.Blocks['container_name'] = {
     init: function() {
@@ -139,51 +125,6 @@ Blockly.Blocks['label_output'] = {
     this.setHelpUrl('');
   }
 };
-
-
-Blockly.Blocks['environment'] = {
-  init: function() {
-    this.appendStatementInput("environment")
-        .setCheck(null)
-        .appendField("environment");
-    this.setPreviousStatement(true, null);
-    this.setNextStatement(true, null);
-    this.setColour(195);
-    this.setTooltip('');
-    this.setHelpUrl('https://docs.docker.com/compose/compose-file/compose-file-v2/#environment');
-  }
-};
-
-Blockly.Blocks['args'] = {
-init: function() {
-    this.appendStatementInput("args")
-        .setCheck(null)
-        .appendField("args");
-    this.setPreviousStatement(true, null);
-    this.setNextStatement(true, null);
-    this.setColour(195);
-    this.setTooltip('');
-    this.setHelpUrl('https://docs.docker.com/compose/compose-file/compose-file-v2/#ports');
-  }
-};
-
-Blockly.Blocks['env_file'] = {
-  init: function() {
-    this.appendValueInput("env_file")
-        .setCheck("String")
-        .appendField("env_file");
-    this.setInputsInline(false);
-    this.setPreviousStatement(true, null);
-    this.setNextStatement(true, null);
-    this.setColour(230);
-    this.setTooltip('Image name goes here');
-    this.setHelpUrl('https://docs.docker.com/compose/compose-file/compose-file-v2/#image');
-  }
-};
-
-
-
-
 
 
 Blockly.Blocks['containers'] = {
@@ -226,6 +167,19 @@ Blockly.Blocks['name'] = {
     }
 };
 
+Blockly.Blocks['controller'] = {
+    init: function() {
+        this.appendDummyInput()
+            .appendField("controller")
+            .appendField(new Blockly.FieldDropdown([["Deployment","Deployment"], ["Job","Job"], ["DeploymentConfig","DeploymentConfig"]]), "controller");
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
+        this.setColour(230);
+        this.setTooltip("controller");
+        this.setHelpUrl("controller");
+    }
+};
+
 Blockly.Blocks['service_type'] = {
     init: function() {
         this.appendDummyInput()
@@ -251,3 +205,18 @@ Blockly.Blocks['service_name'] = {
         this.setHelpUrl("service_name");
     }
 };
+
+Blockly.Blocks['env'] = {
+    init: function() {
+        this.appendDummyInput()
+            .appendField(new Blockly.FieldTextInput("key"), "key")
+            .appendField("=")
+            .appendField(new Blockly.FieldTextInput("value"), "value");
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
+        this.setColour(230);
+        this.setTooltip("env");
+        this.setHelpUrl("env");
+    }
+};
+

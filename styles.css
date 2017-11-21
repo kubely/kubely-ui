@@ -2,7 +2,6 @@ body
 {
 	font-family:Arial, sans-serif;
 	font-size: 16pt;
-/*	background-image: url("back.jpg"); */
 }
 p
 {
@@ -11,7 +10,7 @@ p
 }
 #header
 {
-    font-family:Comic Sans MS;
+    font-family:Courier New, Courier, monospace;
     font-size: 50pt;
 	color:#F00;
 }

@@ -13,34 +13,34 @@
 	      	code = window.Blockly.JavaScript.workspaceToCode();
 	      	c = JSON.parse(code);
             console.log(code);
-            // $.ajax({
-            //     type: "POST",
-            //     url: "https://5ae63feb.ngrok.io/api/v1/generate",
-            //     data: JSON.stringify(c),
-            //     success: function(dataString) {
-            //         console.log(dataString);
-            //         download("kubernetes.yml", dataString);
+            $.ajax({
+                type: "POST",
+                url: "http://localhost:9999/api/v1/generate",
+                data: JSON.stringify(c),
+                success: function(dataString) {
+                    console.log(dataString);
+                    download("kubernetes.yml", dataString);
 
-            //     }
-            // });
+                }
+            });
 			
          //   var yaml = json2yaml(code);
      ////       console.log(yaml);
-		//	download("docker-compose.yml", yaml)
+			// download("docker-compose.yml", yaml)
 		};
 
-		// function download(filename, text) {
-        //   var element = document.createElement('a');
-        //   element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
-        //   element.setAttribute('download', filename);
+		function download(filename, text) {
+          var element = document.createElement('a');
+          element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+          element.setAttribute('download', filename);
 
-        //   element.style.display = 'none';
-        //   document.body.appendChild(element);
+          element.style.display = 'none';
+          document.body.appendChild(element);
 
-        //   element.click();
+          element.click();
 
-        //   document.body.removeChild(element);
-// }
+          document.body.removeChild(element);
+}
 
 	</script>
 </head>

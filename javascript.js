@@ -189,13 +189,38 @@ Blockly.JavaScript['ports_mappings'] = function(block) {
 Blockly.JavaScript['env_mappings'] = function(block) {
     var statements_ports = Blockly.JavaScript.statementToCode(block, 'env_mappings');
     a = statements_ports.split("!");
-    a.splice(a.length-1, 1);
-    a[0] = a[0].trim();
+    
+       var config = [];
+       for(i = 0; i< a.length-1; i++){
+   
+                q = JSON.parse(a[i].trim());
+                
+                config.push(q);
+   
+              }
+   
+    // console.log(a);
+    // a.splice(a.length-1, 1);
+    // console.log(a);
+    // a[0] = a[0].trim();
+    // console.log(a);
     var dict = {};
-    dict['PortMappings'] = a;
-
+    dict['env'] = config;
+    
     var code = JSON.stringify(dict);
     return code+'!';
+};
+
+Blockly.JavaScript['env'] = function(block) {
+    var text_key = block.getFieldValue('key');
+    var text_value = block.getFieldValue('value');
+    // TODO: Assemble JavaScript into code variable.
+    var arr=[];
+    var dict={};
+    dict["name"]=text_key.trim();
+    dict["value"]=text_value.trim();
+    var code = JSON.stringify(dict);
+    return code+"!";
 };
 
 Blockly.JavaScript['ports'] = function(block) {
@@ -234,10 +259,3 @@ Blockly.JavaScript['labels'] = function(block) {
   return code+'!';
 };
 
-Blockly.JavaScript['env'] = function(block) {
-    var text_key = block.getFieldValue('key');
-    var text_value = block.getFieldValue('value');
-    // TODO: Assemble JavaScript into code variable.
-    var code = '...;\n';
-    return code;
-};

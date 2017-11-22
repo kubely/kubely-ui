@@ -117,7 +117,7 @@ Blockly.Blocks['labels'] = {
 Blockly.Blocks['label_output'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField(new Blockly.FieldTextInput("your label"), "label_output");
+        .appendField(new Blockly.FieldTextInput("myport"), "label_output");
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(330);

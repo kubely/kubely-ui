@@ -2,6 +2,7 @@
 <head>
     <title>kedge</title>
     <script src="json2yaml.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <link rel="stylesheet" type="text/css" href="styles.css" />
     <script type="text/javascript">
         window.blockly_loaded = function(blockly) {
@@ -10,27 +11,35 @@
 
 		window.run_code = function() {
 	      	code = window.Blockly.JavaScript.workspaceToCode();
-
+	      	c = JSON.parse(code);
             console.log(code);
-			 //document.getElementById("demo").innerHTML = code;
-             //var code = {language: 'node_js', node_js: ['0.10', '0.11']};
-     ////       var yaml = json2yaml(code);
-     ////       console.log(yaml);
-			// document.getElementById("demo").innerHTML = yaml;
-			// download("docker-compose.yml", yaml)
-		}
+            // $.ajax({
+            //     type: "POST",
+            //     url: "https://5ae63feb.ngrok.io/api/v1/generate",
+            //     data: JSON.stringify(c),
+            //     success: function(dataString) {
+            //         console.log(dataString);
+            //         download("kubernetes.yml", dataString);
 
-// 		function download(filename, text) {
-//           var element = document.createElement('a');
-//           element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
-//           element.setAttribute('download', filename);
-//
-//           element.style.display = 'none';
-//           document.body.appendChild(element);
-//
-//           element.click();
-//
-//           document.body.removeChild(element);
+            //     }
+            // });
+			
+         //   var yaml = json2yaml(code);
+     ////       console.log(yaml);
+		//	download("docker-compose.yml", yaml)
+		};
+
+		// function download(filename, text) {
+        //   var element = document.createElement('a');
+        //   element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+        //   element.setAttribute('download', filename);
+
+        //   element.style.display = 'none';
+        //   document.body.appendChild(element);
+
+        //   element.click();
+
+        //   document.body.removeChild(element);
 // }
 
 	</script>
@@ -50,15 +59,9 @@
 <button id="button_run" onclick="run_code()">Generate kedge  file</button>
 <br>
 <br>
-<button id="button_k8s" onclick="run_code()">Deploy  Kedge file</button>
+<button id="button_k8s"type="file">Upload Kubeconfig file</button>
 <br>
 <br>
-<!--<button id="button_oc" onclick="run_code()">Generate Openshift file</button>
-<br>-->
-
-         <br>
-
-<p id="demo" contenteditable="true"></p>
 </body>
 
 </html>

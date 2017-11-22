@@ -9,6 +9,8 @@ import (
 	"os/exec"
 	"strings"
 
+	"github.com/gorilla/mux"
+	"github.com/kedge-trial/blockly-kedge/server/controllers"
 	"github.com/kedge-trial/blockly-kedge/server/payload"
 )
 
@@ -150,14 +152,10 @@ func verifyOC() bool {
 // enhance http response structure
 func main() {
 	prebuildChecks()
-
-	fs := http.FileServer(http.Dir("uploads"))
-	http.Handle("/", fs)
-	// router := mux.NewRouter().StrictSlash(true)
-	// sub := router.PathPrefix("/api/v1").Subrouter()
-	// sub.Methods("POST").Path("/generate").HandlerFunc(controllers.GenerateDeploy)
-	// sub.Methods("GET").Path("/").HandlerFunc(fs)
-	// log.Println("starting server on ", PORT)
+	router := mux.NewRouter().StrictSlash(true)
+	sub := router.PathPrefix("/api/v1").Subrouter()
+	sub.Methods("POST").Path("/generate").HandlerFunc(controllers.GenerateDeploy)
+	log.Println("starting server on ", PORT)
 	addr := fmt.Sprintf(":%d", PORT)
-	log.Fatal(http.ListenAndServe(addr, nil))
+	log.Fatal(http.ListenAndServe(addr, router))
 }

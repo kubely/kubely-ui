@@ -1,1 +1,0 @@
-{"containers":[{"image":"centos/httpd"}],"name":"web","services":[{"PortMappings":["8080:80"],"name":"web","type":"NodePort"}]}

@@ -50,25 +50,24 @@ func GenerateDeploy(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte(err.Error()))
 		return
 	}
-	// w.Header().Set("Content-Type", "application/json")
-	// http.ServeFile(w, r, fileToDownload)
-	// w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=%s", fileToDownload))
-	// w.Header().Set("Content-Type", r.Header.Get("Content-Type"))
 	data, err := ioutil.ReadFile(fileToDownload)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte(err.Error()))
 		return
 	}
-
+	// w.Header().Set("Content-Type", "text/oc-stream")
+	w.Header().Set("Cache-Control", "no-cache")
+	w.Header().Set("Connection", "keep-alive")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 	// buf := bytes.NewBuffer(data)
 	// dec := base64.NewDecoder(base64.StdEncoding, buf)
 	fmt.Println("------------------", fileToDownload)
 	// w.WriteHeader(http.StatusCreated)
 	// w.Header().Set("Content-Type", "application/yml")
 	// w.Header().Set("Content-Disposition", "Attachment")
-	w.Header().Set("Content-Disposition", "attachment; filename=Wiki.png")
-	w.Header().Set("Content-Type", r.Header.Get("Content-Type"))
+	w.Header().Set("Content-Disposition", "attachment; filename=yes.png")
+	w.Header().Set("Content-Type", "image/png")
 	// w.Write(data)
 	io.Copy(w, bytes.NewReader(data))
 	// w.Header().Set("Content-Disposition", "Attachment")

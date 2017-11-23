@@ -180,7 +180,7 @@ Blockly.JavaScript['ports_mappings'] = function(block) {
     a.splice(a.length-1, 1);
     a[0] = a[0].trim();
     var dict = {};
-    dict['PortMappings'] = a;
+    dict['portMappings'] = a;
 
     var code = JSON.stringify(dict);
     return code+'!';

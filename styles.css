@@ -8,12 +8,6 @@ p
 	line-height:24pt;
 	color:#FFF;
 }
-#header
-{
-    font-family:Courier New, Courier, monospace;
-    font-size: 50pt;
-	color:#F00;
-}
 #blockly
 {
 	border:1px solid #CCC;
@@ -47,4 +41,30 @@ p
 	margin-left:20%;
 }
 
+.btn {
+	background-color: red;
+	color: #FFFFFF;
+	padding: 10px;
+	border-radius: 10px;
+	-moz-border-radius: 10px;
+	-webkit-border-radius: 10px;
+	margin:10px
+}
 
+.big-btn {
+	width: 90px;
+	height: 40px;
+}
+
+.header {
+	font-family:monospace;
+	text-align: center;
+	color:red;
+	font-weight: bold;
+	font-size: 30pt;
+}
+.header .subheader{
+	color:blueviolet;
+	font-weight: lighter;
+	font-size: 20pt;
+}

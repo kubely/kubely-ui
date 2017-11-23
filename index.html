@@ -1,6 +1,6 @@
 <html>
 <head>
-    <title>kedge</title>
+    <title>KubeLee</title>
     <script src="json2yaml.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <link rel="stylesheet" type="text/css" href="styles.css" />
@@ -47,7 +47,10 @@
 
 <body>
 
-<h1 id="header">Kedge</h1>
+<div class="header">
+    <h3>KubeLee</h3>
+    <h4 class="subheader">Deployment Visualizer</h4>
+</div>
 
 <div id="blockly_editor">
 
@@ -55,11 +58,7 @@
 
 </div>
 <br>
-
-<button id="button_run" onclick="run_code()">Generate kedge  file</button>
-<br>
-<br>
-<button id="button_k8s"type="file">Upload Kubeconfig file</button>
+<button type="button" class="btn big-btn" id="button_run" onclick="run_code()">Deploy</button>
 <br>
 <br>
 </body>

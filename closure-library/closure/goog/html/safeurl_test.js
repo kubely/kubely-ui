@@ -19,13 +19,15 @@
 goog.provide('goog.html.safeUrlTest');
 
 goog.require('goog.html.SafeUrl');
+goog.require('goog.html.TrustedResourceUrl');
+goog.require('goog.html.safeUrlTestVectors');
 goog.require('goog.i18n.bidi.Dir');
+goog.require('goog.object');
 goog.require('goog.string.Const');
 goog.require('goog.testing.jsunit');
 goog.require('goog.userAgent');
 
 goog.setTestOnly('goog.html.safeUrlTest');
-
 
 
 function testSafeUrl() {
@@ -49,8 +51,14 @@ function testSafeUrlFromBlob_withSafeType() {
   if (isIE9OrLower()) {
     return;
   }
+  assertBlobTypeIsSafe('audio/ogg', true);
   assertBlobTypeIsSafe('image/png', true);
   assertBlobTypeIsSafe('iMage/pNg', true);
+  assertBlobTypeIsSafe('video/mpeg', true);
+  assertBlobTypeIsSafe('video/ogg', true);
+  assertBlobTypeIsSafe('video/mp4', true);
+  assertBlobTypeIsSafe('video/ogg', true);
+  assertBlobTypeIsSafe('video/webm', true);
 }
 
 
@@ -61,6 +69,8 @@ function testSafeUrlFromBlob_withUnsafeType() {
   assertBlobTypeIsSafe('', false);
   assertBlobTypeIsSafe('ximage/png', false);
   assertBlobTypeIsSafe('image/pngx', false);
+  assertBlobTypeIsSafe('video/whatever', false);
+  assertBlobTypeIsSafe('video/', false);
 }
 
 
@@ -89,153 +99,85 @@ function assertBlobTypeIsSafe(type, isSafe) {
 }
 
 
+function testSafeUrlSanitize_sanitizeTelUrl() {
+  var vectors = goog.html.safeUrlTestVectors.TEL_VECTORS;
+  for (var i = 0; i < vectors.length; ++i) {
+    var v = vectors[i];
+    var observed = goog.html.SafeUrl.fromTelUrl(v.input);
+    assertEquals(v.expected, goog.html.SafeUrl.unwrap(observed));
+  }
+}
+
+
+function testFromTrustedResourceUrl() {
+  var url = goog.string.Const.from('test');
+  var trustedResourceUrl = goog.html.TrustedResourceUrl.fromConstant(url);
+  var safeUrl = goog.html.SafeUrl.fromTrustedResourceUrl(trustedResourceUrl);
+  assertEquals(
+      goog.string.Const.unwrap(url), goog.html.SafeUrl.unwrap(safeUrl));
+}
+
+
 /** @suppress {checkTypes} */
 function testUnwrap() {
+  var privateFieldName = 'privateDoNotAccessOrElseSafeHtmlWrappedValue_';
+  var markerFieldName = 'SAFE_URL_TYPE_MARKER_GOOG_HTML_SECURITY_PRIVATE_';
+  var propNames = goog.object.getKeys(goog.html.SafeUrl.sanitize(''));
+  assertContains(privateFieldName, propNames);
+  assertContains(markerFieldName, propNames);
   var evil = {};
-  evil.safeUrlValueWithSecurityContract_googHtmlSecurityPrivate_ =
-      '<script>evil()</script';
-  evil.SAFE_URL_TYPE_MARKER_GOOG_HTML_SECURITY_PRIVATE_ = {};
+  evil[privateFieldName] = 'javascript:evil()';
+  evil[markerFieldName] = {};
 
-  var exception = assertThrows(function() {
-    goog.html.SafeUrl.unwrap(evil);
-  });
-  assertTrue(exception.message.indexOf('expected object of type SafeUrl') > 0);
+  var exception = assertThrows(function() { goog.html.SafeUrl.unwrap(evil); });
+  assertContains('expected object of type SafeUrl', exception.message);
 }
 
 
-/**
- * Assert that url passes through sanitization unchanged.
- * @param {string|!goog.string.TypedString} url The URL to sanitize.
- */
-function assertGoodUrl(url) {
-  var expected = url;
-  if (url.implementsGoogStringTypedString) {
-    expected = url.getTypedStringValue();
+function testSafeUrlSanitize_sanitizeUrl() {
+  var vectors = goog.html.safeUrlTestVectors.BASE_VECTORS;
+  for (var i = 0; i < vectors.length; ++i) {
+    var v = vectors[i];
+    if (v.input.match(/^data:/i)) {
+      var observed = goog.html.SafeUrl.fromDataUrl(v.input);
+      assertEquals(v.expected, goog.html.SafeUrl.unwrap(observed));
+    } else {
+      var observed = goog.html.SafeUrl.sanitize(v.input);
+      assertEquals(v.expected, goog.html.SafeUrl.unwrap(observed));
+      if (v.safe) {
+        var asserted = goog.html.SafeUrl.sanitizeAssertUnchanged(v.input);
+        assertEquals(v.expected, goog.html.SafeUrl.unwrap(asserted));
+      } else {
+        assertThrows(function() {
+          goog.html.SafeUrl.sanitizeAssertUnchanged(v.input);
+        });
+      }
+    }
   }
-  var safeUrl = goog.html.SafeUrl.sanitize(url);
-  var extracted = goog.html.SafeUrl.unwrap(safeUrl);
-  assertEquals(expected, extracted);
 }
 
 
-/**
- * Assert that url fails sanitization.
- * @param {string|!goog.string.TypedString} url The URL to sanitize.
- */
-function assertBadUrl(url) {
-  assertEquals(
-      goog.html.SafeUrl.INNOCUOUS_STRING,
-      goog.html.SafeUrl.unwrap(
-          goog.html.SafeUrl.sanitize(url)));
-}
-
-
-function testSafeUrlSanitize_validatesUrl() {
-  // Whitelisted schemes.
-  assertGoodUrl('http://example.com/');
-  assertGoodUrl('https://example.com');
-  assertGoodUrl('mailto:foo@example.com');
-  assertGoodUrl('ftp://example.com');
-  assertGoodUrl('ftp://username@example.com');
-  assertGoodUrl('ftp://username:password@example.com');
-  // Scheme is case-insensitive
-  assertGoodUrl('HTtp://example.com/');
-  // Different URL components go through.
-  assertGoodUrl('https://example.com/path?foo=bar#baz');
-  // Scheme-less URL with authority.
-  assertGoodUrl('//example.com/path');
-  // Absolute path with no authority.
-  assertGoodUrl('/path');
-  assertGoodUrl('/path?foo=bar#baz');
-  // Relative path.
-  assertGoodUrl('path');
-  assertGoodUrl('path?foo=bar#baz');
-  assertGoodUrl('p//ath');
-  assertGoodUrl('p//ath?foo=bar#baz');
-  // Restricted characters ('&', ':', \') after [/?#].
-  assertGoodUrl('/&');
-  assertGoodUrl('?:');
-
+function testSafeUrlSanitize_sanitizeProgramConstants() {
   // .sanitize() works on program constants.
-  assertGoodUrl(goog.string.Const.from('http://example.com/'));
-
-  // Non-whitelisted schemes.
-  assertBadUrl('javascript:evil();');
-  assertBadUrl('javascript:evil();//\nhttp://good.com/');
-  assertBadUrl('data:blah');
-  // Restricted characters before [/?#].
-  assertBadUrl('&');
-  assertBadUrl(':');
-  // '\' is not treated like '/': no restricted characters allowed after it.
-  assertBadUrl('\\:');
-  // Regex anchored to the left: doesn't match on '/:'.
-  assertBadUrl(':/:');
-  // Regex multiline not enabled: first line would match but second one
-  // wouldn't.
-  assertBadUrl('path\n:');
+  var good = goog.string.Const.from('http://example.com/');
+  var goodOutput = goog.html.SafeUrl.sanitize(good);
+  assertEquals('http://example.com/', goog.html.SafeUrl.unwrap(goodOutput));
+  var asserted = goog.html.SafeUrl.sanitizeAssertUnchanged(good);
+  assertEquals('http://example.com/', goog.html.SafeUrl.unwrap(asserted));
 
   // .sanitize() does not exempt values known to be program constants.
-  assertBadUrl(goog.string.Const.from('data:blah'));
-}
-
-
-/**
- * Asserts that goog.html.SafeUrl.unwrap returns the expected string when the
- * SafeUrl has been constructed by passing the given url to
- * goog.html.SafeUrl.sanitize.
- * @param {string} url The string to pass to goog.html.SafeUrl.sanitize.
- * @param {string} expected The string representation that
- *         goog.html.SafeUrl.unwrap should return.
- */
-function assertSanitizeEncodesTo(url, expected) {
-  var safeUrl = goog.html.SafeUrl.sanitize(url);
-  var actual = goog.html.SafeUrl.unwrap(safeUrl);
-  assertEquals(
-      'SafeUrl.sanitize().unwrap() doesn\'t return expected ' +
-          'percent-encoded string',
-      expected,
-      actual);
-}
-
-
-function testSafeUrlSanitize_percentEncodesUrl() {
-  // '%' is preserved.
-  assertSanitizeEncodesTo('%', '%');
-  assertSanitizeEncodesTo('%2F', '%2F');
-
-  // Unreserved characters, RFC 3986.
-  assertSanitizeEncodesTo('aA1-._~', 'aA1-._~');
-
-  // Reserved characters, RFC 3986. Only '\'', '(' and ')' are encoded.
-  assertSanitizeEncodesTo('/:?#[]@!$&\'()*+,;=', '/:?#[]@!$&%27%28%29*+,;=');
-
-
-  // Other ASCII characters, printable and non-printable.
-  assertSanitizeEncodesTo('^"\\`\x00\n\r\x7f', '%5E%22%5C%60%00%0A%0D%7F');
-
-  // Codepoints which UTF-8 encode to 2 bytes.
-  assertSanitizeEncodesTo('\u0080\u07ff', '%C2%80%DF%BF');
-
-  // Highest codepoint which can be UTF-16 encoded using two bytes
-  // (one code unit). Highest codepoint in basic multilingual plane and highest
-  // that JavaScript can represent using \u.
-  assertSanitizeEncodesTo('\uffff', '%EF%BF%BF');
-
-  // Supplementary plane codepoint which UTF-16 and UTF-8 encode to 4 bytes.
-  // Valid surrogate sequence.
-  assertSanitizeEncodesTo('\ud800\udc00', '%F0%90%80%80');
-
-  // Invalid lead/high surrogate.
-  assertSanitizeEncodesTo('\udc00', goog.html.SafeUrl.INNOCUOUS_STRING);
-
-  // Invalid trail/low surrogate.
-  assertSanitizeEncodesTo('\ud800\ud800', goog.html.SafeUrl.INNOCUOUS_STRING);
+  var bad = goog.string.Const.from('data:blah');
+  var badOutput = goog.html.SafeUrl.sanitize(bad);
+  assertEquals('about:invalid#zClosurez', goog.html.SafeUrl.unwrap(badOutput));
+  assertThrows(function() {
+    goog.html.SafeUrl.sanitizeAssertUnchanged(bad);
+  });
 }
 
 
 function testSafeUrlSanitize_idempotentForSafeUrlArgument() {
-  // This goes through percent-encoding.
-  var safeUrl = goog.html.SafeUrl.sanitize('%11"');
+  // This matches the safe prefix.
+  var safeUrl = goog.html.SafeUrl.sanitize('https://www.google.com/');
   var safeUrl2 = goog.html.SafeUrl.sanitize(safeUrl);
   assertEquals(
       goog.html.SafeUrl.unwrap(safeUrl), goog.html.SafeUrl.unwrap(safeUrl2));

@@ -70,7 +70,8 @@ function testScaleFactor() {
   var a = new goog.math.Vec2(1, 2);
   var scaled = a.scale(0.5);
 
-  assertTrue('The type of the return value should be goog.math.Vec2',
+  assertTrue(
+      'The type of the return value should be goog.math.Vec2',
       scaled instanceof goog.math.Vec2);
   assertVectorEquals(new goog.math.Vec2(0.5, 1), a);
 }
@@ -80,7 +81,8 @@ function testScaleXY() {
   var a = new goog.math.Vec2(10, 15);
   var scaled = a.scale(2, 3);
   assertEquals('The function should return the target instance', a, scaled);
-  assertTrue('The type of the return value should be goog.math.Vec2',
+  assertTrue(
+      'The type of the return value should be goog.math.Vec2',
       scaled instanceof goog.math.Vec2);
   assertVectorEquals(new goog.math.Vec2(20, 45), a);
 }
@@ -139,6 +141,7 @@ function testEquals() {
   var a = new goog.math.Vec2(1, 2);
 
   assertFalse(a.equals(null));
+  assertFalse(a.equals({}));
   assertFalse(a.equals(new goog.math.Vec2(1, 3)));
   assertFalse(a.equals(new goog.math.Vec2(2, 2)));
 
@@ -202,6 +205,19 @@ function testDot() {
   assertEquals(-35, goog.math.Vec2.dot(c, d));
 }
 
+function testDeterminant() {
+  var a = new goog.math.Vec2(0, 5);
+  var b = new goog.math.Vec2(0, 10);
+  assertEquals(0, goog.math.Vec2.determinant(a, b));
+
+  var c = new goog.math.Vec2(0, 5);
+  var d = new goog.math.Vec2(10, 0);
+  assertEquals(-50, goog.math.Vec2.determinant(c, d));
+
+  var e = new goog.math.Vec2(-5, -5);
+  var f = new goog.math.Vec2(0, 7);
+  assertEquals(-35, goog.math.Vec2.determinant(e, f));
+}
 
 function testLerp() {
   var a = new goog.math.Vec2(0, 0);
@@ -214,6 +230,15 @@ function testLerp() {
   }
 }
 
+function testRescaled() {
+  const a = new goog.math.Vec2(1, 2);
+  const b = goog.math.Vec2.rescaled(a, 3);
+  assertVectorEquals(new goog.math.Vec2(3, 6), b);
+
+  const c = goog.math.Vec2.rescaled(a, 3, -2);
+  assertVectorEquals(new goog.math.Vec2(3, -4), c);
+  assertVectorEquals(new goog.math.Vec2(1, 2), a);
+}
 
 function testToString() {
   testEquals('(0, 0)', new goog.math.Vec2(0, 0).toString());

@@ -28,7 +28,13 @@ p
 }
 #button_run
 {
-	margin-left:20%;
+	margin-top: 34%;
+	font-size: 22px;
+	margin-left: 23%;
+	width: 110px;
+	height: 45px;
+	background-color: green;
+	cursor: pointer;
 }
 
 #button_k8s

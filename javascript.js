@@ -32,34 +32,34 @@ Blockly.JavaScript['version'] = function(block) {
    code = JSON.stringify(dict12);
   //  code = text_version_name+statements_version;
    // console.log(text_version_name, statements_version);
-  return code+"!";
+  return code;
 };
 
-Blockly.JavaScript['main'] = function(block) {
-    var statements_main = Blockly.JavaScript.statementToCode(block, 'main');
-    // TODO: Assemble JavaScript into code variable.
-    var dict12 = {};
-    a = statements_main.split("!");
-    function jsonConcat(o1, o2) {
-        for (var key in o2) {
-            o1[key] = o2[key];
-        }
-        return o1;
-    }
-    var config = {};
-    var final = [];
-    for(i = 0; i< a.length-1; i++) {
+// Blockly.JavaScript['main'] = function(block) {
+//     var statements_main = Blockly.JavaScript.statementToCode(block, 'main');
+//     // TODO: Assemble JavaScript into code variable.
+//     var dict12 = {};
+//     a = statements_main.split("!");
+//     function jsonConcat(o1, o2) {
+//         for (var key in o2) {
+//             o1[key] = o2[key];
+//         }
+//         return o1;
+//     }
+//     var config = {};
+//     var final = [];
+//     for(i = 0; i< a.length-1; i++) {
 
-        q = JSON.parse(a[i]);
-        config = jsonConcat(config, q);
-        final.push(q);
+//         q = JSON.parse(a[i]);
+//         config = jsonConcat(config, q);
+//         final.push(q);
 
-    }
-    dict12['kedge'] = final;
- //   return dict12;
-    var code = JSON.stringify(dict12);
-    return code;
-};
+//     }
+//     dict12['kedge'] = final;
+//  //   return dict12;
+//     var code = JSON.stringify(dict12);
+//     return code;
+// };
 
 /////////////////////
 Blockly.JavaScript['name'] = function(block) {
@@ -142,14 +142,27 @@ Blockly.JavaScript['services'] = function(block) {
         return o1;
     }
     var config = {};
+
     for(i = 0; i< a.length-1; i++){
-
-
         q = JSON.parse(a[i]);
         config = jsonConcat(config, q);
-
-
     }
+    var code1 = {};
+    if ((config["name"] != "name" ) && (typeof config["name"] != 'undefined')){
+        var rtdict = {};
+        var rdic = {};
+        var too = {};
+        rdic["name"] = config["name"];
+        too["kind"] = "Service";
+        too["name"] = config["name"];
+        rdic["to"] = too;
+        rtdict["routes"] = [rdic];
+        code1 =JSON.stringify(rtdict);
+        dict["services"] = [config];
+        var code =JSON.stringify(dict);
+        return code+"!"+code1+"!";
+    }
+    // delete config["rt"];
     dict["services"] = [config];
     var code =JSON.stringify(dict);
     return code+"!";
@@ -259,3 +272,12 @@ Blockly.JavaScript['labels'] = function(block) {
   return code+'!';
 };
 
+Blockly.JavaScript['routes'] = function(block) {
+    var checkbox_routes = block.getFieldValue('routes') == 'TRUE';
+    // TODO: Assemble JavaScript into code variable.
+    var dict = {};
+    dict["rt"] = checkbox_routes;
+    // TODO: Assemble JavaScript into code variable.
+    var code = JSON.stringify(dict);
+    return code+"!";
+  };

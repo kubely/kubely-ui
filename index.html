@@ -4,63 +4,84 @@
     <script src="json2yaml.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <link rel="stylesheet" type="text/css" href="styles.css" />
+    <script src="closure-library/closure/goog/base.js"></script>
+    
     <script type="text/javascript">
+    goog.require('goog.dom');
+
+    
         window.blockly_loaded = function(blockly) {
 			return window.Blockly = blockly;
 		}
-
+        var allXml = [];
+       
 		window.run_code = function() {
-	      	code = window.Blockly.JavaScript.workspaceToCode();
-	      	c = JSON.parse(code);
-            console.log(code);
+	      	code = window.Blockly.JavaScript.workspaceToCode(window.mainWorkspace);
+	      	// c = JSON.parse(code);
+      ////////      console.log(code);
+            var blocks = Blockly.getMainWorkspace().getTopBlocks();
+                        var allCode = [];
+
+            for(var i = 0;i <= blocks.length - 1; i++){
+                var headless = new Blockly.Workspace();
+                var xml = goog.dom.createDom('xml');
+                var w = Blockly.Xml.blockToDomWithXY(blocks[i]);
+                xml.appendChild(w);
+                Blockly.Xml.domToWorkspace(xml, headless);
+                var p = JSON.parse(Blockly.JavaScript.workspaceToCode(headless))
+                allCode.push(p);
+            }
+            var c ={};
+            c["kedge"] = allCode;
+            c = JSON.stringify(c);
+            console.log("array is", c );
+    
             $.ajax({
                 type: "POST",
                 url: "http://localhost:9999/api/v1/generate",
-                data: JSON.stringify(c),
+                data: c,
                 success: function(dataString) {
                     console.log(dataString);
-                    download("kubernetes.yml", dataString);
+                    // download("kubernetes.yml", dataString);
 
                 }
             });
 			
-         //   var yaml = json2yaml(code);
-     ////       console.log(yaml);
-			// download("docker-compose.yml", yaml)
 		};
 
-		function download(filename, text) {
-          var element = document.createElement('a');
-          element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
-          element.setAttribute('download', filename);
+// 		function download(filename, text) {
+//           var element = document.createElement('a');
+//           element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+//           element.setAttribute('download', filename);
 
-          element.style.display = 'none';
-          document.body.appendChild(element);
+//           element.style.display = 'none';
+//           document.body.appendChild(element);
 
-          element.click();
+//           element.click();
 
-          document.body.removeChild(element);
-}
+//           document.body.removeChild(element);
+// }
 
-	</script>
+    </script>
+    
 </head>
 
 <body>
 
 <div class="header">
-    <h3>KubeLee</h3>
-    <h4 class="subheader">Deployment Visualizer</h4>
+    <h3>Optikos</h3>
+    <br/>
 </div>
 
 <div id="blockly_editor">
 
-    <iframe id="blockly" src="blockly.html" width="100%"></iframe>
+    <iframe id="blockly" src="blockly.html" width="135%"></iframe>
 
 </div>
-<br>
+<br/>
 <button type="button" class="btn big-btn" id="button_run" onclick="run_code()">Deploy</button>
-<br>
-<br>
+<br/>
+<br/>
 </body>
 
 </html>

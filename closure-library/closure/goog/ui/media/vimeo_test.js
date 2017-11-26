@@ -16,6 +16,7 @@ goog.provide('goog.ui.media.VimeoTest');
 goog.setTestOnly('goog.ui.media.VimeoTest');
 
 goog.require('goog.dom');
+goog.require('goog.dom.TagName');
 goog.require('goog.testing.jsunit');
 goog.require('goog.ui.media.FlashObject');
 goog.require('goog.ui.media.Media');
@@ -27,7 +28,7 @@ var VIMEO_ID = '3001295';
 var VIMEO_URL = 'http://vimeo.com/' + VIMEO_ID;
 var VIMEO_URL_HD = 'http://vimeo.com/hd#' + VIMEO_ID;
 var VIMEO_URL_SECURE = 'https://vimeo.com/' + VIMEO_ID;
-var parent = goog.dom.createElement('div');
+var parent = goog.dom.createElement(goog.dom.TagName.DIV);
 
 function setUp() {
   vimeo = new goog.ui.media.Vimeo();
@@ -43,9 +44,9 @@ function tearDown() {
 function testBasicRendering() {
   control.render(parent);
   var el = goog.dom.getElementsByTagNameAndClass(
-      'div', goog.ui.media.Vimeo.CSS_CLASS, parent);
+      goog.dom.TagName.DIV, goog.ui.media.Vimeo.CSS_CLASS, parent);
   assertEquals(1, el.length);
-  assertEquals(VIMEO_URL, control.getDataModel().getUrl());
+  assertEquals(VIMEO_URL_SECURE, control.getDataModel().getUrl());
 }
 
 function testParsingUrl() {
@@ -61,27 +62,24 @@ function testParsingUrl() {
 }
 
 function testBuildingUrl() {
-  assertEquals(
-      VIMEO_URL, goog.ui.media.VimeoModel.buildUrl(VIMEO_ID));
+  assertEquals(VIMEO_URL_SECURE, goog.ui.media.VimeoModel.buildUrl(VIMEO_ID));
 }
 
 function testCreatingModel() {
   var model = new goog.ui.media.VimeoModel(VIMEO_ID);
   assertEquals(VIMEO_ID, model.getVideoId());
-  assertEquals(VIMEO_URL, model.getUrl());
+  assertEquals(VIMEO_URL_SECURE, model.getUrl());
   assertUndefined(model.getCaption());
 }
 
 function testCreatingDomOnInitialState() {
   control.render(parent);
   var caption = goog.dom.getElementsByTagNameAndClass(
-      'div',
-      goog.ui.media.Vimeo.CSS_CLASS + '-caption',
-      parent);
+      goog.dom.TagName.DIV, goog.ui.media.Vimeo.CSS_CLASS + '-caption', parent);
   assertEquals(1, caption.length);
 
   var flash = goog.dom.getElementsByTagNameAndClass(
-      'div', goog.ui.media.FlashObject.CSS_CLASS, parent);
+      goog.dom.TagName.DIV, goog.ui.media.FlashObject.CSS_CLASS, parent);
   assertEquals(1, flash.length);
 }
 

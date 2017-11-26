@@ -24,6 +24,7 @@ goog.require('goog.editor.Field');
 goog.require('goog.editor.Plugin');
 goog.require('goog.editor.plugins.TagOnEnterHandler');
 goog.require('goog.events.KeyCodes');
+goog.require('goog.html.SafeHtml');
 goog.require('goog.string.Unicode');
 goog.require('goog.testing.dom');
 goog.require('goog.testing.editor.TestHelper');
@@ -52,17 +53,20 @@ function testDeleteBrBeforeBlock() {
   // and let the browser do the delete, which can only be tested with a robot
   // test (see javascript/apps/editor/tests/delete_br_robot.html).
   if (goog.userAgent.GECKO) {
-
-    field1.setHtml(false, 'one<br><br><div>two</div>');
+    field1.setSafeHtml(
+        false,
+        goog.html.SafeHtml.concat(
+            'one', goog.html.SafeHtml.BR, goog.html.SafeHtml.BR,
+            goog.html.SafeHtml.create('div', {}, 'two')));
     var helper = new goog.testing.editor.TestHelper(field1.getElement());
-    helper.select(field1.getElement(), 2); // Between the two BR's.
-    goog.testing.events.fireKeySequence(field1.getElement(),
-                                        goog.events.KeyCodes.DELETE);
-    assertEquals('Should have deleted exactly one <br>',
-                 'one<br><div>two</div>',
-                 field1.getElement().innerHTML);
+    helper.select(field1.getElement(), 2);  // Between the two BR's.
+    goog.testing.events.fireKeySequence(
+        field1.getElement(), goog.events.KeyCodes.DELETE);
+    assertEquals(
+        'Should have deleted exactly one <br>', 'one<br><div>two</div>',
+        field1.getElement().innerHTML);
 
-  } // End if GECKO
+  }  // End if GECKO
 }
 
 
@@ -77,18 +81,22 @@ function testDeleteBrNormal() {
   // and let the browser do the delete, which can only be tested with a robot
   // test (see javascript/apps/editor/tests/delete_br_robot.html).
   if (goog.userAgent.GECKO) {
-
-    field1.setHtml(false, 'one<br><br><br>two');
+    field1.setSafeHtml(
+        false,
+        goog.html.SafeHtml.concat(
+            'one', goog.html.SafeHtml.BR, goog.html.SafeHtml.BR,
+            goog.html.SafeHtml.BR, 'two'));
     var helper = new goog.testing.editor.TestHelper(field1.getElement());
-    helper.select(field1.getElement(), 2); // Between the first and second BR's.
+    helper.select(
+        field1.getElement(), 2);  // Between the first and second BR's.
     field1.getElement().focus();
-    goog.testing.events.fireKeySequence(field1.getElement(),
-                                        goog.events.KeyCodes.DELETE);
-    assertEquals('Should have deleted exactly one <br>',
-                 'one<br><br>two',
-                 field1.getElement().innerHTML);
+    goog.testing.events.fireKeySequence(
+        field1.getElement(), goog.events.KeyCodes.DELETE);
+    assertEquals(
+        'Should have deleted exactly one <br>', 'one<br><br>two',
+        field1.getElement().innerHTML);
 
-  } // End if GECKO
+  }  // End if GECKO
 }
 
 
@@ -103,24 +111,29 @@ function testDeleteBrNormal() {
  */
 function testEnterCreatesBlankLine() {
   if (goog.userAgent.GECKO) {
-    field1.setHtml(false, '<p>one <br></p>');
+    field1.setSafeHtml(
+        false,
+        goog.html.SafeHtml.create('p', {}, ['one ', goog.html.SafeHtml.BR]));
     var helper = new goog.testing.editor.TestHelper(field1.getElement());
     // Place caret after 'one' but keeping a space and a BR as FF does.
     helper.select('one ', 3);
     field1.getElement().focus();
-    goog.testing.events.fireKeySequence(field1.getElement(),
-                                        goog.events.KeyCodes.ENTER);
+    goog.testing.events.fireKeySequence(
+        field1.getElement(), goog.events.KeyCodes.ENTER);
     var range = field1.getRange();
-    assertFalse('Selection should not be in BR tag',
-                range.getStartNode().nodeType == goog.dom.NodeType.ELEMENT &&
-                range.getStartNode().tagName == goog.dom.TagName.BR);
-    assertEquals('Selection should be in text node to avoid creating adjacent' +
-                 ' text nodes',
+    assertFalse(
+        'Selection should not be in BR tag',
+        range.getStartNode().nodeType == goog.dom.NodeType.ELEMENT &&
+            range.getStartNode().tagName == goog.dom.TagName.BR);
+    assertEquals(
+        'Selection should be in text node to avoid creating adjacent' +
+            ' text nodes',
         goog.dom.NodeType.TEXT, range.getStartNode().nodeType);
     var rangeStartNode =
         goog.dom.Range.createFromNodeContents(range.getStartNode());
-    assertHTMLEquals('The value of selected text node should be replaced with' +
-        '&nbsp;',
+    assertHTMLEquals(
+        'The value of selected text node should be replaced with' +
+            '&nbsp;',
         '&nbsp;', rangeStartNode.getHtmlFragment());
   }
 }
@@ -136,18 +149,22 @@ function testEnterCreatesBlankLine() {
  */
 function testEnterNormalizeNodes() {
   if (goog.userAgent.GECKO) {
-    field1.setHtml(false, '<p>one<br></p>');
+    field1.setSafeHtml(
+        false,
+        goog.html.SafeHtml.create('p', {}, ['one', goog.html.SafeHtml.BR]));
     var helper = new goog.testing.editor.TestHelper(field1.getElement());
     // Place caret after 'one' but keeping a BR as FF does.
     helper.select('one', 3);
     field1.getElement().focus();
-    goog.testing.events.fireKeySequence(field1.getElement(),
-                                        goog.events.KeyCodes.ENTER);
+    goog.testing.events.fireKeySequence(
+        field1.getElement(), goog.events.KeyCodes.ENTER);
     var range = field1.getRange();
-    assertTrue('Selection should be in P tag',
+    assertTrue(
+        'Selection should be in P tag',
         range.getStartNode().nodeType == goog.dom.NodeType.ELEMENT &&
-        range.getStartNode().tagName == goog.dom.TagName.P);
-    assertTrue('Selection should be at the head and collapsed',
+            range.getStartNode().tagName == goog.dom.TagName.P);
+    assertTrue(
+        'Selection should be at the head and collapsed',
         range.getStartOffset() == 0 && range.isCollapsed());
   }
 }
@@ -161,13 +178,14 @@ function testEnterNormalizeNodes() {
  */
 function testEnterAtBeginningOfLink() {
   if (goog.userAgent.GECKO) {
-    field1.setHtml(false, '<a href="/">b<br></a>');
+    field1.setSafeHtml(false, goog.html.SafeHtml.create('a', {'href': '/'}, [
+      'b', goog.html.SafeHtml.BR
+    ]));
     var helper = new goog.testing.editor.TestHelper(field1.getElement());
     field1.focusAndPlaceCursorAtStart();
-    goog.testing.events.fireKeySequence(field1.getElement(),
-                                        goog.events.KeyCodes.ENTER);
-    helper.assertHtmlMatches(
-        '<p>&nbsp;</p><p><a href="/">b<br></a></p>');
+    goog.testing.events.fireKeySequence(
+        field1.getElement(), goog.events.KeyCodes.ENTER);
+    helper.assertHtmlMatches('<p>&nbsp;</p><p><a href="/">b<br></a></p>');
   }
 }
 
@@ -177,12 +195,17 @@ function testEnterAtBeginningOfLink() {
  */
 function testEnterInEmptyListItemInEmptyList() {
   if (goog.userAgent.GECKO) {
-    field1.setHtml(false, '<ul><li>&nbsp;</li></ul>');
+    field1.setSafeHtml(
+        false,
+        goog.html.SafeHtml.create(
+            'ul', {},
+            goog.html.SafeHtml.create('li', {}, goog.string.Unicode.NBSP)));
     var helper = new goog.testing.editor.TestHelper(field1.getElement());
-    var li = field1.getElement().getElementsByTagName(goog.dom.TagName.LI)[0];
+    var li = goog.dom.getElementsByTagName(
+        goog.dom.TagName.LI, field1.getElement())[0];
     helper.select(li.firstChild, 0);
-    goog.testing.events.fireKeySequence(field1.getElement(),
-                                        goog.events.KeyCodes.ENTER);
+    goog.testing.events.fireKeySequence(
+        field1.getElement(), goog.events.KeyCodes.ENTER);
     helper.assertHtmlMatches('<p>&nbsp;</p>');
   }
 }
@@ -190,17 +213,19 @@ function testEnterInEmptyListItemInEmptyList() {
 
 function testEnterInEmptyListItemAtBeginningOfList() {
   if (goog.userAgent.GECKO) {
-    field1.setHtml(false,
-        '<ul style="font-weight: bold">' +
-            '<li>&nbsp;</li>' +
-            '<li>1</li>' +
-            '<li>2</li>' +
-        '</ul>');
+    field1.setSafeHtml(
+        false,
+        goog.html.SafeHtml.create('ul', {'style': {'font-weight': 'bold'}}, [
+          goog.html.SafeHtml.create('li', {}, goog.string.Unicode.NBSP),
+          goog.html.SafeHtml.create('li', {}, '1'),
+          goog.html.SafeHtml.create('li', {}, '2')
+        ]));
     var helper = new goog.testing.editor.TestHelper(field1.getElement());
-    var li = field1.getElement().getElementsByTagName(goog.dom.TagName.LI)[0];
+    var li = goog.dom.getElementsByTagName(
+        goog.dom.TagName.LI, field1.getElement())[0];
     helper.select(li.firstChild, 0);
-    goog.testing.events.fireKeySequence(field1.getElement(),
-                                        goog.events.KeyCodes.ENTER);
+    goog.testing.events.fireKeySequence(
+        field1.getElement(), goog.events.KeyCodes.ENTER);
     helper.assertHtmlMatches(
         '<p>&nbsp;</p><ul style="font-weight: bold"><li>1</li><li>2</li></ul>');
   }
@@ -209,17 +234,19 @@ function testEnterInEmptyListItemAtBeginningOfList() {
 
 function testEnterInEmptyListItemAtEndOfList() {
   if (goog.userAgent.GECKO) {
-    field1.setHtml(false,
-        '<ul style="font-weight: bold">' +
-            '<li>1</li>' +
-            '<li>2</li>' +
-            '<li>&nbsp;</li>' +
-        '</ul>');
+    field1.setSafeHtml(
+        false,
+        goog.html.SafeHtml.create('ul', {'style': {'font-weight': 'bold'}}, [
+          goog.html.SafeHtml.create('li', {}, '1'),
+          goog.html.SafeHtml.create('li', {}, '2'),
+          goog.html.SafeHtml.create('li', {}, goog.string.Unicode.NBSP)
+        ]));
     var helper = new goog.testing.editor.TestHelper(field1.getElement());
-    var li = field1.getElement().getElementsByTagName(goog.dom.TagName.LI)[2];
+    var li = goog.dom.getElementsByTagName(
+        goog.dom.TagName.LI, field1.getElement())[2];
     helper.select(li.firstChild, 0);
-    goog.testing.events.fireKeySequence(field1.getElement(),
-                                        goog.events.KeyCodes.ENTER);
+    goog.testing.events.fireKeySequence(
+        field1.getElement(), goog.events.KeyCodes.ENTER);
     helper.assertHtmlMatches(
         '<ul style="font-weight: bold"><li>1</li><li>2</li></ul><p>&nbsp;</p>');
   }
@@ -228,17 +255,19 @@ function testEnterInEmptyListItemAtEndOfList() {
 
 function testEnterInEmptyListItemInMiddleOfList() {
   if (goog.userAgent.GECKO) {
-    field1.setHtml(false,
-        '<ul style="font-weight: bold">' +
-            '<li>1</li>' +
-            '<li>&nbsp;</li>' +
-            '<li>2</li>' +
-        '</ul>');
+    field1.setSafeHtml(
+        false,
+        goog.html.SafeHtml.create('ul', {'style': {'font-weight': 'bold'}}, [
+          goog.html.SafeHtml.create('li', {}, '1'),
+          goog.html.SafeHtml.create('li', {}, goog.string.Unicode.NBSP),
+          goog.html.SafeHtml.create('li', {}, '2')
+        ]));
     var helper = new goog.testing.editor.TestHelper(field1.getElement());
-    var li = field1.getElement().getElementsByTagName(goog.dom.TagName.LI)[1];
+    var li = goog.dom.getElementsByTagName(
+        goog.dom.TagName.LI, field1.getElement())[1];
     helper.select(li.firstChild, 0);
-    goog.testing.events.fireKeySequence(field1.getElement(),
-                                        goog.events.KeyCodes.ENTER);
+    goog.testing.events.fireKeySequence(
+        field1.getElement(), goog.events.KeyCodes.ENTER);
     helper.assertHtmlMatches(
         '<ul style="font-weight: bold"><li>1</li></ul>' +
         '<p>&nbsp;</p>' +
@@ -249,21 +278,23 @@ function testEnterInEmptyListItemInMiddleOfList() {
 
 function testEnterInEmptyListItemInSublist() {
   if (goog.userAgent.GECKO) {
-    field1.setHtml(false,
-        '<ul>' +
-        '<li>A</li>' +
-        '<ul style="font-weight: bold">' +
-        '<li>1</li>' +
-        '<li>&nbsp;</li>' +
-        '<li>2</li>' +
-        '</ul>' +
-        '<li>B</li>' +
-        '</ul>');
+    field1.setSafeHtml(false, goog.html.SafeHtml.create('ul', {}, [
+      goog.html.SafeHtml.create('li', {}, 'A'),
+      goog.html.SafeHtml.create(
+          'ul', {'style': {'font-weight': 'bold'}},
+          [
+            goog.html.SafeHtml.create('li', {}, '1'),
+            goog.html.SafeHtml.create('li', {}, goog.string.Unicode.NBSP),
+            goog.html.SafeHtml.create('li', {}, '2')
+          ]),
+      goog.html.SafeHtml.create('li', {}, 'B')
+    ]));
     var helper = new goog.testing.editor.TestHelper(field1.getElement());
-    var li = field1.getElement().getElementsByTagName(goog.dom.TagName.LI)[2];
+    var li = goog.dom.getElementsByTagName(
+        goog.dom.TagName.LI, field1.getElement())[2];
     helper.select(li.firstChild, 0);
-    goog.testing.events.fireKeySequence(field1.getElement(),
-                                        goog.events.KeyCodes.ENTER);
+    goog.testing.events.fireKeySequence(
+        field1.getElement(), goog.events.KeyCodes.ENTER);
     helper.assertHtmlMatches(
         '<ul>' +
         '<li>A</li>' +
@@ -278,21 +309,23 @@ function testEnterInEmptyListItemInSublist() {
 
 function testEnterInEmptyListItemAtBeginningOfSublist() {
   if (goog.userAgent.GECKO) {
-    field1.setHtml(false,
-        '<ul>' +
-        '<li>A</li>' +
-        '<ul style="font-weight: bold">' +
-        '<li>&nbsp;</li>' +
-        '<li>1</li>' +
-        '<li>2</li>' +
-        '</ul>' +
-        '<li>B</li>' +
-        '</ul>');
+    field1.setSafeHtml(false, goog.html.SafeHtml.create('ul', {}, [
+      goog.html.SafeHtml.create('li', {}, 'A'),
+      goog.html.SafeHtml.create(
+          'ul', {'style': {'font-weight': 'bold'}},
+          [
+            goog.html.SafeHtml.create('li', {}, goog.string.Unicode.NBSP),
+            goog.html.SafeHtml.create('li', {}, '1'),
+            goog.html.SafeHtml.create('li', {}, '2')
+          ]),
+      goog.html.SafeHtml.create('li', {}, 'B')
+    ]));
     var helper = new goog.testing.editor.TestHelper(field1.getElement());
-    var li = field1.getElement().getElementsByTagName(goog.dom.TagName.LI)[1];
+    var li = goog.dom.getElementsByTagName(
+        goog.dom.TagName.LI, field1.getElement())[1];
     helper.select(li.firstChild, 0);
-    goog.testing.events.fireKeySequence(field1.getElement(),
-                                        goog.events.KeyCodes.ENTER);
+    goog.testing.events.fireKeySequence(
+        field1.getElement(), goog.events.KeyCodes.ENTER);
     helper.assertHtmlMatches(
         '<ul>' +
         '<li>A</li>' +
@@ -306,21 +339,23 @@ function testEnterInEmptyListItemAtBeginningOfSublist() {
 
 function testEnterInEmptyListItemAtEndOfSublist() {
   if (goog.userAgent.GECKO) {
-    field1.setHtml(false,
-        '<ul>' +
-        '<li>A</li>' +
-        '<ul style="font-weight: bold">' +
-        '<li>1</li>' +
-        '<li>2</li>' +
-        '<li>&nbsp;</li>' +
-        '</ul>' +
-        '<li>B</li>' +
-        '</ul>');
+    field1.setSafeHtml(false, goog.html.SafeHtml.create('ul', {}, [
+      goog.html.SafeHtml.create('li', {}, 'A'),
+      goog.html.SafeHtml.create(
+          'ul', {'style': {'font-weight': 'bold'}},
+          [
+            goog.html.SafeHtml.create('li', {}, '1'),
+            goog.html.SafeHtml.create('li', {}, '2'),
+            goog.html.SafeHtml.create('li', {}, goog.string.Unicode.NBSP)
+          ]),
+      goog.html.SafeHtml.create('li', {}, 'B')
+    ]));
     var helper = new goog.testing.editor.TestHelper(field1.getElement());
-    var li = field1.getElement().getElementsByTagName(goog.dom.TagName.LI)[3];
+    var li = goog.dom.getElementsByTagName(
+        goog.dom.TagName.LI, field1.getElement())[3];
     helper.select(li.firstChild, 0);
-    goog.testing.events.fireKeySequence(field1.getElement(),
-                                        goog.events.KeyCodes.ENTER);
+    goog.testing.events.fireKeySequence(
+        field1.getElement(), goog.events.KeyCodes.ENTER);
     helper.assertHtmlMatches(
         '<ul>' +
         '<li>A</li>' +
@@ -344,8 +379,7 @@ function testPrepareContentForDivOnEnter() {
   assertPreparedContents('hi', 'hi', goog.dom.TagName.DIV);
   assertPreparedContents(
       goog.editor.BrowserFeature.COLLAPSES_EMPTY_NODES ? '<div><br></div>' : '',
-      '   ',
-      goog.dom.TagName.DIV);
+      '   ', goog.dom.TagName.DIV);
 }
 
 
@@ -355,9 +389,9 @@ function testPrepareContentForDivOnEnter() {
 function assertPreparedContents(expected, original, opt_tag) {
   var field = makeField('field1', opt_tag);
   field.makeEditable();
-  assertEquals(expected,
-      field.reduceOp_(
-          goog.editor.Plugin.Op.PREPARE_CONTENTS_HTML, original));
+  assertEquals(
+      expected,
+      field.reduceOp_(goog.editor.Plugin.Op.PREPARE_CONTENTS_HTML, original));
 }
 
 
@@ -378,7 +412,7 @@ function selectNodeAndHitEnter(field, id) {
 /**
  * Creates a field with only the enter handler plugged in, for testing.
  * @param {string} id A DOM id.
- * @param {boolean=} opt_tag The block tag to use.  Defaults to P.
+ * @param {!goog.dom.TagName=} opt_tag The block tag to use.  Defaults to P.
  * @return {goog.editor.Field} A field.
  */
 function makeField(id, opt_tag) {
@@ -401,13 +435,14 @@ function makeField(id, opt_tag) {
  * @param {boolean=} opt_goToRoot True if the root argument for splitDom should
  *     be excluded.
  */
-function helpTestSplit_(offset, firstHalfString, secondHalfString, isAppend,
-    opt_goToBody) {
-  var node = document.createElement('div');
+function helpTestSplit_(
+    offset, firstHalfString, secondHalfString, isAppend, opt_goToBody) {
+  var node = goog.dom.createElement(goog.dom.TagName.DIV);
   node.innerHTML = '<b>begin bold<i>italic</i>end bold</b>';
   document.body.appendChild(node);
 
-  var italic = node.getElementsByTagName('i')[0].firstChild;
+  var italic =
+      goog.dom.getElementsByTagName(goog.dom.TagName.I, node)[0].firstChild;
 
   var splitFn = isAppend ?
       goog.editor.plugins.TagOnEnterHandler.splitDomAndAppend_ :
@@ -418,18 +453,19 @@ function helpTestSplit_(offset, firstHalfString, secondHalfString, isAppend,
     secondHalfString = '<div>' + secondHalfString + '</div>';
   }
 
-  assertEquals('original node should have first half of the html',
-               firstHalfString,
-               node.innerHTML.toLowerCase().
-      replace(goog.string.Unicode.NBSP, '&nbsp;'));
-  assertEquals('new node should have second half of the html',
-               secondHalfString,
-               secondHalf.innerHTML.toLowerCase().
-                   replace(goog.string.Unicode.NBSP, '&nbsp;'));
+  assertEquals(
+      'original node should have first half of the html', firstHalfString,
+      node.innerHTML.toLowerCase().replace(goog.string.Unicode.NBSP, '&nbsp;'));
+  assertEquals(
+      'new node should have second half of the html', secondHalfString,
+      secondHalf.innerHTML.toLowerCase().replace(
+          goog.string.Unicode.NBSP, '&nbsp;'));
 
   if (isAppend) {
-    assertTrue('second half of dom should be the original node\'s next' +
-               'sibling', node.nextSibling == secondHalf);
+    assertTrue(
+        'second half of dom should be the original node\'s next' +
+            'sibling',
+        node.nextSibling == secondHalf);
     goog.dom.removeNode(secondHalf);
   }
 
@@ -465,52 +501,52 @@ function testSplitDomAndAppend() {
 
 
 function testSplitDomAtElement() {
-  var node = document.createElement('div');
+  var node = goog.dom.createElement(goog.dom.TagName.DIV);
   node.innerHTML = '<div>abc<br>def</div>';
   document.body.appendChild(node);
 
-  goog.editor.plugins.TagOnEnterHandler.splitDomAndAppend_(node.firstChild, 1,
-      node.firstChild);
+  goog.editor.plugins.TagOnEnterHandler.splitDomAndAppend_(
+      node.firstChild, 1, node.firstChild);
 
-  goog.testing.dom.assertHtmlContentsMatch('<div>abc</div><div><br>def</div>',
-      node);
+  goog.testing.dom.assertHtmlContentsMatch(
+      '<div>abc</div><div><br>def</div>', node);
 
   goog.dom.removeNode(node);
 }
 
 
 function testSplitDomAtElementStart() {
-  var node = document.createElement('div');
+  var node = goog.dom.createElement(goog.dom.TagName.DIV);
   node.innerHTML = '<div>abc<br>def</div>';
   document.body.appendChild(node);
 
-  goog.editor.plugins.TagOnEnterHandler.splitDomAndAppend_(node.firstChild, 0,
-      node.firstChild);
+  goog.editor.plugins.TagOnEnterHandler.splitDomAndAppend_(
+      node.firstChild, 0, node.firstChild);
 
-  goog.testing.dom.assertHtmlContentsMatch('<div></div><div>abc<br>def</div>',
-      node);
+  goog.testing.dom.assertHtmlContentsMatch(
+      '<div></div><div>abc<br>def</div>', node);
 
   goog.dom.removeNode(node);
 }
 
 
 function testSplitDomAtChildlessElement() {
-  var node = document.createElement('div');
+  var node = goog.dom.createElement(goog.dom.TagName.DIV);
   node.innerHTML = '<div>abc<br>def</div>';
   document.body.appendChild(node);
 
-  var br = node.getElementsByTagName(goog.dom.TagName.BR)[0];
+  var br = goog.dom.getElementsByTagName(goog.dom.TagName.BR, node)[0];
   goog.editor.plugins.TagOnEnterHandler.splitDomAndAppend_(
       br, 0, node.firstChild);
 
-  goog.testing.dom.assertHtmlContentsMatch('<div>abc</div><div><br>def</div>',
-      node);
+  goog.testing.dom.assertHtmlContentsMatch(
+      '<div>abc</div><div><br>def</div>', node);
 
   goog.dom.removeNode(node);
 }
 
 function testReplaceWhiteSpaceWithNbsp() {
-  var node = document.createElement('div');
+  var node = goog.dom.createElement(goog.dom.TagName.DIV);
   var textNode = document.createTextNode('');
   node.appendChild(textNode);
 

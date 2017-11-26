@@ -12,16 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-goog.LOCALE = 'en_US';
 goog.provide('goog.date.durationTest');
 goog.setTestOnly('goog.date.durationTest');
 
 goog.require('goog.date.duration');
 goog.require('goog.i18n.DateTimeFormat');
 goog.require('goog.i18n.DateTimeSymbols');
-goog.require('goog.i18n.DateTimeSymbols_bn'); // Bengali
+goog.require('goog.i18n.DateTimeSymbols_bn');  // Bengali
 goog.require('goog.i18n.DateTimeSymbols_en');
-goog.require('goog.i18n.DateTimeSymbols_fa'); // Persian
+goog.require('goog.i18n.DateTimeSymbols_fa');  // Persian
+goog.require('goog.testing.PropertyReplacer');
 goog.require('goog.testing.jsunit');
 
 var MINUTE_MS = 60000;
@@ -29,6 +29,12 @@ var HOUR_MS = 60 * MINUTE_MS;
 var DAY_MS = 24 * HOUR_MS;
 
 var duration = goog.date.duration.format;
+
+
+function setUpPage() {
+  var propertyReplacer = new goog.testing.PropertyReplacer();
+  propertyReplacer.replace(goog, 'LOCALE', 'en_US');
+}
 
 function testFormatDurationZeroMinutes() {
   assertEquals('0 minutes', duration(0));
@@ -56,8 +62,7 @@ function testFormatDurationHours() {
   assertEquals('11 hours', duration(11 * HOUR_MS));
   assertEquals('11 hours', duration(11 * HOUR_MS + 1));
   assertEquals('11 hours 1 minute', duration(11 * HOUR_MS + MINUTE_MS));
-  assertEquals('11 hours 45 minutes',
-      duration(11 * HOUR_MS + 45 * MINUTE_MS));
+  assertEquals('11 hours 45 minutes', duration(11 * HOUR_MS + 45 * MINUTE_MS));
 }
 
 function testFormatDurationDays() {
@@ -67,13 +72,13 @@ function testFormatDurationDays() {
   assertEquals('1 day 45 minutes', duration(DAY_MS + 45 * MINUTE_MS));
   assertEquals('1 day 1 hour', duration(DAY_MS + HOUR_MS));
   assertEquals('1 day 11 hours', duration(DAY_MS + 11 * HOUR_MS));
-  assertEquals('1 day 1 hour 1 minute',
-      duration(DAY_MS + HOUR_MS + MINUTE_MS));
-  assertEquals('1 day 1 hour 45 minutes',
-      duration(DAY_MS + HOUR_MS + 45 * MINUTE_MS));
-  assertEquals('1 day 11 hours 1 minute',
-      duration(DAY_MS + 11 * HOUR_MS + MINUTE_MS));
-  assertEquals('1 day 11 hours 45 minutes',
+  assertEquals('1 day 1 hour 1 minute', duration(DAY_MS + HOUR_MS + MINUTE_MS));
+  assertEquals(
+      '1 day 1 hour 45 minutes', duration(DAY_MS + HOUR_MS + 45 * MINUTE_MS));
+  assertEquals(
+      '1 day 11 hours 1 minute', duration(DAY_MS + 11 * HOUR_MS + MINUTE_MS));
+  assertEquals(
+      '1 day 11 hours 45 minutes',
       duration(DAY_MS + 11 * HOUR_MS + 45 * MINUTE_MS));
 
   assertEquals('11 days', duration(11 * DAY_MS));
@@ -82,13 +87,16 @@ function testFormatDurationDays() {
   assertEquals('11 days 45 minutes', duration(11 * DAY_MS + 45 * MINUTE_MS));
   assertEquals('11 days 1 hour', duration(11 * DAY_MS + HOUR_MS));
   assertEquals('11 days 11 hours', duration(11 * DAY_MS + 11 * HOUR_MS));
-  assertEquals('11 days 1 hour 1 minute',
-      duration(11 * DAY_MS + HOUR_MS + MINUTE_MS));
-  assertEquals('11 days 1 hour 45 minutes',
+  assertEquals(
+      '11 days 1 hour 1 minute', duration(11 * DAY_MS + HOUR_MS + MINUTE_MS));
+  assertEquals(
+      '11 days 1 hour 45 minutes',
       duration(11 * DAY_MS + HOUR_MS + 45 * MINUTE_MS));
-  assertEquals('11 days 11 hours 1 minute',
+  assertEquals(
+      '11 days 11 hours 1 minute',
       duration(11 * DAY_MS + 11 * HOUR_MS + MINUTE_MS));
-  assertEquals('11 days 11 hours 45 minutes',
+  assertEquals(
+      '11 days 11 hours 45 minutes',
       duration(11 * DAY_MS + 11 * HOUR_MS + 45 * MINUTE_MS));
 }
 

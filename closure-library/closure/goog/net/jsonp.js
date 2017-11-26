@@ -21,8 +21,10 @@
  * from which it came. The Jsonp class provides a workaround by
  * using dynamically generated script tags. Typical usage:.
  *
- * var jsonp = new goog.net.Jsonp(new goog.Uri('http://my.host.com/servlet'));
- * var payload = { 'foo': 1, 'bar': true };
+ * var trustedUri = goog.html.TrustedResourceUrl.fromConstant(
+ *     goog.string.Const.from('https://example.com/servlet'));
+ * var jsonp = new goog.net.Jsonp(trustedUri);
+ * var payload = {'foo': 1, 'bar': true};
  * jsonp.send(payload, function(reply) { alert(reply) });
  *
  * This script works in all browsers that are currently supported by
@@ -33,8 +35,9 @@
 
 goog.provide('goog.net.Jsonp');
 
-goog.require('goog.Uri');
+goog.require('goog.html.TrustedResourceUrl');
 goog.require('goog.net.jsloader');
+goog.require('goog.object');
 
 // WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING
 //
@@ -55,8 +58,8 @@ goog.require('goog.net.jsloader');
  * host URL. By default, if no reply arrives within 5s, the channel
  * assumes the call failed to complete successfully.
  *
- * @param {goog.Uri|string} uri The Uri of the server side code that receives
- *     data posted through this channel (e.g.,
+ * @param {!goog.html.TrustedResourceUrl} uri The Uri of the server side code
+ *     that receives data posted through this channel (e.g.,
  *     "http://maps.google.com/maps/geo").
  *
  * @param {string=} opt_callbackParamName The parameter name that is used to
@@ -69,18 +72,18 @@ goog.net.Jsonp = function(uri, opt_callbackParamName) {
   /**
    * The uri_ object will be used to encode the payload that is sent to the
    * server.
-   * @type {goog.Uri}
+   * @type {!goog.html.TrustedResourceUrl}
    * @private
    */
-  this.uri_ = new goog.Uri(uri);
+  this.uri_ = uri;
 
   /**
    * This is the callback parameter name that is added to the uri.
    * @type {string}
    * @private
    */
-  this.callbackParamName_ = opt_callbackParamName ?
-      opt_callbackParamName : 'callback';
+  this.callbackParamName_ =
+      opt_callbackParamName ? opt_callbackParamName : 'callback';
 
   /**
    * The length of time, in milliseconds, this channel is prepared
@@ -89,12 +92,20 @@ goog.net.Jsonp = function(uri, opt_callbackParamName) {
    * @private
    */
   this.timeout_ = 5000;
+
+  /**
+   * The nonce to use in the dynamically generated script tags. This is used for
+   * allowing the script callbacks to execute when the page has an enforced
+   * Content Security Policy.
+   * @type {string}
+   * @private
+   */
+  this.nonce_ = '';
 };
 
 
 /**
- * The name of the property of goog.global under which the callback is
- * stored.
+ * The prefix for the callback name which will be stored on goog.global.
  */
 goog.net.Jsonp.CALLBACKS = '_callbacks_';
 
@@ -105,6 +116,19 @@ goog.net.Jsonp.CALLBACKS = '_callbacks_';
  * @private
  */
 goog.net.Jsonp.scriptCounter_ = 0;
+
+
+/**
+ * Static private method which returns the global unique callback id.
+ *
+ * @param {string} id The id of the script node.
+ * @return {string} A global unique id used to store callback on goog.global
+ *     object.
+ * @private
+ */
+goog.net.Jsonp.getCallbackId_ = function(id) {
+  return goog.net.Jsonp.CALLBACKS + '__' + id;
+};
 
 
 /**
@@ -129,6 +153,19 @@ goog.net.Jsonp.prototype.setRequestTimeout = function(timeout) {
  */
 goog.net.Jsonp.prototype.getRequestTimeout = function() {
   return this.timeout_;
+};
+
+
+/**
+ * Sets the nonce value for CSP. This nonce value will be added to any created
+ * script elements and must match the nonce provided in the
+ * Content-Security-Policy header sent by the server for the callback to pass
+ * CSP enforcement.
+ *
+ * @param {string} nonce The CSP nonce value.
+ */
+goog.net.Jsonp.prototype.setNonce = function(nonce) {
+  this.nonce_ = nonce;
 };
 
 
@@ -166,37 +203,32 @@ goog.net.Jsonp.prototype.getRequestTimeout = function() {
  * @return {!Object} A request descriptor that may be used to cancel this
  *     transmission, or null, if the message may not be cancelled.
  */
-goog.net.Jsonp.prototype.send = function(opt_payload,
-                                         opt_replyCallback,
-                                         opt_errorCallback,
-                                         opt_callbackParamValue) {
+goog.net.Jsonp.prototype.send = function(
+    opt_payload, opt_replyCallback, opt_errorCallback, opt_callbackParamValue) {
 
-  var payload = opt_payload || null;
+  var payload = opt_payload ? goog.object.clone(opt_payload) : {};
 
   var id = opt_callbackParamValue ||
       '_' + (goog.net.Jsonp.scriptCounter_++).toString(36) +
-      goog.now().toString(36);
-
-  if (!goog.global[goog.net.Jsonp.CALLBACKS]) {
-    goog.global[goog.net.Jsonp.CALLBACKS] = {};
-  }
-
-  // Create a new Uri object onto which this payload will be added
-  var uri = this.uri_.clone();
-  if (payload) {
-    goog.net.Jsonp.addPayloadToUri_(payload, uri);
-  }
+          goog.now().toString(36);
+  var callbackId = goog.net.Jsonp.getCallbackId_(id);
 
   if (opt_replyCallback) {
     var reply = goog.net.Jsonp.newReplyHandler_(id, opt_replyCallback);
-    goog.global[goog.net.Jsonp.CALLBACKS][id] = reply;
-
-    uri.setParameterValues(this.callbackParamName_,
-                           goog.net.Jsonp.CALLBACKS + '.' + id);
+    // Register the callback on goog.global to make it discoverable
+    // by jsonp response.
+    goog.global[callbackId] = reply;
+    payload[this.callbackParamName_] = callbackId;
   }
 
-  var deferred = goog.net.jsloader.load(uri.toString(),
-      {timeout: this.timeout_, cleanupWhenDone: true});
+  var options = {timeout: this.timeout_, cleanupWhenDone: true};
+  if (this.nonce_) {
+    options.attributes = {'nonce': this.nonce_};
+  }
+
+  var uri = this.uri_.cloneWithParams(payload);
+
+  var deferred = goog.net.jsloader.safeLoad(uri, options);
   var error = goog.net.Jsonp.newErrorHandler_(id, payload, opt_errorCallback);
   deferred.addErrback(error);
 
@@ -232,9 +264,7 @@ goog.net.Jsonp.prototype.cancel = function(request) {
  * @return {!Function} A zero argument function that handles callback duties.
  * @private
  */
-goog.net.Jsonp.newErrorHandler_ = function(id,
-                                           payload,
-                                           opt_errorCallback) {
+goog.net.Jsonp.newErrorHandler_ = function(id, payload, opt_errorCallback) {
   /**
    * When we call across domains with a request, this function is the
    * timeout handler. Once it's done executing the user-specified
@@ -275,7 +305,7 @@ goog.net.Jsonp.newReplyHandler_ = function(id, replyCallback) {
 
 
 /**
- * Removes the script node and reply handler with the given id.
+ * Removes the reply handler registered on goog.global object.
  *
  * @param {string} id The id of the script node to be removed.
  * @param {boolean} deleteReplyHandler If true, delete the reply handler
@@ -284,46 +314,22 @@ goog.net.Jsonp.newReplyHandler_ = function(id, replyCallback) {
  * @private
  */
 goog.net.Jsonp.cleanup_ = function(id, deleteReplyHandler) {
-  if (goog.global[goog.net.Jsonp.CALLBACKS][id]) {
+  var callbackId = goog.net.Jsonp.getCallbackId_(id);
+  if (goog.global[callbackId]) {
     if (deleteReplyHandler) {
-      delete goog.global[goog.net.Jsonp.CALLBACKS][id];
+      try {
+        delete goog.global[callbackId];
+      } catch (e) {
+        // NOTE: Workaround to delete property on 'window' in IE <= 8, see:
+        // http://stackoverflow.com/questions/1073414/deleting-a-window-property-in-ie
+        goog.global[callbackId] = undefined;
+      }
     } else {
       // Removing the script tag doesn't necessarily prevent the script
       // from firing, so we make the callback a noop.
-      goog.global[goog.net.Jsonp.CALLBACKS][id] = goog.nullFunction;
+      goog.global[callbackId] = goog.nullFunction;
     }
   }
-};
-
-
-/**
- * Returns URL encoded payload. The payload should be a map of name-value
- * pairs, in the form {"foo": 1, "bar": true, ...}.  If the map is empty,
- * the URI will be unchanged.
- *
- * <p>The method uses hasOwnProperty() to assure the properties are on the
- * object, not on its prototype.
- *
- * @param {!Object} payload A map of value name pairs to be encoded.
- *     A value may be specified as an array, in which case a query parameter
- *     will be created for each value, e.g.:
- *     {"foo": [1,2]} will encode to "foo=1&foo=2".
- *
- * @param {!goog.Uri} uri A Uri object onto which the payload key value pairs
- *     will be encoded.
- *
- * @return {!goog.Uri} A reference to the Uri sent as a parameter.
- * @private
- */
-goog.net.Jsonp.addPayloadToUri_ = function(payload, uri) {
-  for (var name in payload) {
-    // NOTE(user): Safari/1.3 doesn't have hasOwnProperty(). In that
-    // case, we iterate over all properties as a very lame workaround.
-    if (!payload.hasOwnProperty || payload.hasOwnProperty(name)) {
-      uri.setParameterValues(name, payload[name]);
-    }
-  }
-  return uri;
 };
 
 

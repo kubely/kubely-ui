@@ -2,10 +2,10 @@ Blockly.Blocks['version'] = {
   init: function() {
     this.appendStatementInput("version")
         .setCheck(null)
-        .appendField(new Blockly.FieldTextInput("1"), "version");
-    this.setInputsInline(true);
-      this.setPreviousStatement(true, null);
-      this.setNextStatement(true, null);
+        .appendField(new Blockly.FieldTextInput("app_name"), "version");
+    // this.setInputsInline(true);
+    //   this.setPreviousStatement(true, null);
+    //   this.setNextStatement(true, null);
     this.setColour(150);
     this.setTooltip('version 2');
     this.setHelpUrl('https://docs.docker.com/compose/compose-file/compose-file-v2/');
@@ -13,15 +13,15 @@ Blockly.Blocks['version'] = {
 };
 
 
-Blockly.Blocks['main'] = {
-    init: function() {
-        this.appendStatementInput("main")
-            .setCheck(null);
-        this.setColour(230);
-        this.setTooltip("main");
-        this.setHelpUrl("main");
-    }
-};
+// Blockly.Blocks['main'] = {
+//     init: function() {
+//         this.appendStatementInput("main")
+//             .setCheck(null);
+//         this.setColour(230);
+//         this.setTooltip("main");
+//         this.setHelpUrl("main");
+//     }
+// };
 
 Blockly.Blocks['image'] = {
     init: function() {
@@ -117,7 +117,7 @@ Blockly.Blocks['labels'] = {
 Blockly.Blocks['label_output'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField(new Blockly.FieldTextInput("myport"), "label_output");
+        .appendField(new Blockly.FieldTextInput("ports"), "label_output");
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(330);
@@ -220,3 +220,17 @@ Blockly.Blocks['env'] = {
     }
 };
 
+Blockly.Blocks['routes'] = {
+    init: function() {
+      this.appendDummyInput()
+          .appendField("routes")
+          .appendField(new Blockly.FieldCheckbox("FALSE"), "routes");
+      this.setPreviousStatement(true, null);
+      this.setNextStatement(true, null);
+      this.setColour(230);
+   this.setTooltip("");
+   this.setHelpUrl("");
+    }
+  };
+
+  

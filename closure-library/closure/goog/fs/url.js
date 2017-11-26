@@ -62,7 +62,7 @@ goog.fs.url.getUrlObject_ = function() {
   if (urlObject != null) {
     return urlObject;
   } else {
-    throw Error('This browser doesn\'t seem to support blob URLs');
+    throw new Error('This browser doesn\'t seem to support blob URLs');
   }
 };
 
@@ -81,11 +81,12 @@ goog.fs.url.findUrlObject_ = function() {
   if (goog.isDef(goog.global.URL) &&
       goog.isDef(goog.global.URL.createObjectURL)) {
     return /** @type {goog.fs.url.UrlObject_} */ (goog.global.URL);
-  // This is what Chrome does (as of 10.0.648.6 dev)
-  } else if (goog.isDef(goog.global.webkitURL) &&
-             goog.isDef(goog.global.webkitURL.createObjectURL)) {
+    // This is what Chrome does (as of 10.0.648.6 dev)
+  } else if (
+      goog.isDef(goog.global.webkitURL) &&
+      goog.isDef(goog.global.webkitURL.createObjectURL)) {
     return /** @type {goog.fs.url.UrlObject_} */ (goog.global.webkitURL);
-  // This is what the spec used to say to do
+    // This is what the spec used to say to do
   } else if (goog.isDef(goog.global.createObjectURL)) {
     return /** @type {goog.fs.url.UrlObject_} */ (goog.global);
   } else {

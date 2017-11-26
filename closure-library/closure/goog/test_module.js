@@ -14,14 +14,29 @@
 
 /**
  * @fileoverview A test file for testing goog.module.
+ * @suppress {unusedLocalVariables}
  */
 
 goog.module('goog.test_module');
 goog.setTestOnly('goog.test_module');
 goog.module.declareLegacyNamespace();
 
-var dep = goog.require('goog.test_module_dep');
+
+/** @suppress {extraRequire} */
+var testModuleDep = goog.require('goog.test_module_dep');
+
+// Verify that when this module loads the script tag in the next
+// line doesn't cause the script tag it is loaded in to be closed
+// prematurely.
+var aScriptTagShouldntBreakAnything = '<script>hello</script>world';
+
+
 
 /** @constructor */
-exports = function() {};
+var test = function() {};
 
+// Verify that when this module loads the script tag is not modified by
+// escaping code in base.js.
+test.CLOSING_SCRIPT_TAG = '</script>';
+
+exports = test;

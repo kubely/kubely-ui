@@ -41,6 +41,9 @@ goog.require('goog.asserts');
  * @constructor
  */
 Blockly.Input = function(type, name, block, connection) {
+  if (type != Blockly.DUMMY_INPUT && !name) {
+    throw 'Value inputs and statement inputs must have non-empty name.';
+  }
   /** @type {number} */
   this.type = type;
   /** @type {string} */
@@ -98,7 +101,7 @@ Blockly.Input.prototype.insertFieldAt = function(index, field, opt_name) {
 
   // Empty string, Null or undefined generates no field, unless field is named.
   if (!field && !opt_name) {
-    return this;
+    return index;
   }
   // Generate a FieldLabel when given a plain text field.
   if (goog.isString(field)) {

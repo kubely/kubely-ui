@@ -74,3 +74,16 @@ p
 	font-weight: lighter;
 	font-size: 20pt;
 }
+
+
+
+.popup {
+	visibility: hidden;
+    margin: 6px 34px 7px 0;
+    display: block;
+    font-size: 19px;
+    padding: 27px 34px;
+    text-align: right;
+    background: beige;
+    float: right;
+}

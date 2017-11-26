@@ -15,6 +15,22 @@
 		}
         var allXml = [];
        
+        window.notify = function(mesage, type) {
+            var popup = document.getElementById("message");
+            popup.innerText = mesage;
+            if(type == "s") {
+                popup.style.color = "green";
+            } else {
+                popup.style.color = "red";
+            }
+            popup.style.visibility = "visible";
+            setTimeout(function() { 
+                var popup = document.getElementById("message");
+                popup.style.visibility = "hidden"; 
+            }, 
+            3000);
+        };
+
 		window.run_code = function() {
 	      	code = window.Blockly.JavaScript.workspaceToCode(window.mainWorkspace);
 	      	// c = JSON.parse(code);
@@ -43,7 +59,10 @@
                 success: function(dataString) {
                     console.log(dataString);
                     // download("kubernetes.yml", dataString);
-
+                    notify("Deploying service(s) successfully", "s");
+                },
+                error: function(){
+                    notify("Error in deploying service(s)", "e");
                 }
             });
 			
@@ -70,6 +89,7 @@
 
 <div class="header">
     <h3>Optikos</h3>
+    <span id="message" class="popup"></span>
     <br/>
 </div>
 

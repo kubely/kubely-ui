@@ -2,7 +2,7 @@ Blockly.Blocks['version'] = {
   init: function() {
     this.appendStatementInput("version")
         .setCheck(null)
-        .appendField(new Blockly.FieldTextInput("app_name"), "version");
+        .appendField(new Blockly.FieldTextInput("name"), "version");
     // this.setInputsInline(true);
     //   this.setPreviousStatement(true, null);
     //   this.setNextStatement(true, null);
@@ -54,7 +54,7 @@ Blockly.Blocks['ports_mappings'] = {
 init: function() {
     this.appendStatementInput("ports_mappings")
         .setCheck(null)
-        .appendField("ports_mappings");
+        .appendField("Port mappings");
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(195);
@@ -67,7 +67,7 @@ Blockly.Blocks['env_mappings'] = {
     init: function() {
         this.appendStatementInput("env_mappings")
             .setCheck(null)
-            .appendField("env_mappings");
+            .appendField("Environment");
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
         this.setColour(195);
@@ -117,7 +117,7 @@ Blockly.Blocks['labels'] = {
 Blockly.Blocks['label_output'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField(new Blockly.FieldTextInput("ports"), "label_output");
+        .appendField(new Blockly.FieldTextInput("port:targetPort/protocol"), "label_output");
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(330);
@@ -158,7 +158,7 @@ Blockly.Blocks['name'] = {
         this.appendDummyInput()
             .setAlign(Blockly.ALIGN_CENTRE)
             .appendField("name")
-            .appendField(new Blockly.FieldTextInput("name"), "name");
+            .appendField(new Blockly.FieldTextInput("app_name"), "name");
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
         this.setColour(240);
@@ -183,7 +183,7 @@ Blockly.Blocks['controller'] = {
 Blockly.Blocks['service_type'] = {
     init: function() {
         this.appendDummyInput()
-            .appendField("service_type")
+            .appendField("Service type")
             .appendField(new Blockly.FieldDropdown([["NodePort","NodePort"], ["LoadBalancer","LoadBalancer"], ["ClusterIP","ClusterIP"]]), "service_type");
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
@@ -196,12 +196,12 @@ Blockly.Blocks['service_type'] = {
 Blockly.Blocks['service_name'] = {
     init: function() {
         this.appendDummyInput()
-            .appendField("service_name")
+            .appendField("Service name")
             .appendField(new Blockly.FieldTextInput("name"), "service_name");
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
         this.setColour(230);
-        this.setTooltip("service_name");
+        this.setTooltip("It will create route");
         this.setHelpUrl("service_name");
     }
 };
